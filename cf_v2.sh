@@ -21,9 +21,9 @@ do
                     curl --ipv4 --retry 3 -v "https://speed.cloudflare.com/__down">meta 2>&1
                     cat meta | tr -d '\r' > meta_tmp
                     meta_asn=$(cat meta_tmp | grep cf-meta-asn: | cut -f 2- -d':')
-                    echo asn=$meta_asn > meta.txt
+                    echo asn=$meta_asn > meta_asn.txt
                     meta_city=$(cat meta_tmp | grep cf-meta-city: | cut -f 2- -d':')
-                    echo city=$meta_city > meta.txt
+                    echo city=$meta_city > meta_city.txt
                    curl --ipv4 --retry 3 "https://service.udpfile.com?asn=$meta_asn\&city=$meta_city" -o data.txt
 		fi
 		domain=$(cat data.txt | grep domain= | cut -f 2- -d'=')
@@ -310,8 +310,8 @@ done
 	curl --ipv4 --resolve service.udpfile.com:443:$anycast --retry 3 -s -X POST -d ''20210303-$anycast-$max'' 'https://service.udpfile.com?asn=$meta_asn\&city=$meta_city' -o temp.txt
 	publicip=$(cat temp.txt | grep publicip= | cut -f 2- -d'=')
 	colo=$(cat temp.txt | grep colo= | cut -f 2- -d'=')
-        asn=$(cat meta.txt | grep asn= | cut -f 2- -d'=')
-        city=$(cat meta.txt | grep city= | cut -f 2- -d'=')
+        asn=$(cat meta_asn.txt | grep asn= | cut -f 2- -d'=')
+        city=$(cat meta_city.txt | grep city= | cut -f 2- -d'=')
 	echo 优选IP $anycast 满足 $bandwidth Mbps带宽需求
     echo 公网IP $publicip
     echo 自治域 AS$asn
