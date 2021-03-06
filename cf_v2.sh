@@ -12,7 +12,7 @@ do
 		declare -i n
 		declare -i per
 		declare -i count
-		rm -rf icmp temp log.txt anycast.txt temp.txt meta*
+		rm -rf data.txt icmp temp log.txt anycast.txt temp.txt meta*
 		mkdir icmp
 		datafile="./data.txt"
 		if [[ ! -f "$datafile" ]]
@@ -321,4 +321,4 @@ done
     echo 数据中心 $colo
     echo 总计用时 $((end_seconds-start_seconds)) 秒
     echo $anycast >resolve.txt
-    rm -rf temp.txt meta.txt
+    rm -rf temp.txt meta*
