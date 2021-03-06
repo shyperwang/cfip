@@ -17,17 +17,19 @@ do
 		datafile="./data.txt"
 		if [[ ! -f "$datafile" ]]
 		then
-            echo DNS解析，获取节点中...
-            curl --ipv4 --retry 3 -v "https://speed.cloudflare.com/__down">meta 2>&1
-            echo cat meta | tr -d '\r' > meta_tmp
-            meta_asn=$(cat meta_tmp | grep cf-meta-asn: | cut -f 2- -d':')
-            meta_city=$(cat meta_tmp | grep cf-meta-city: | cut -f 2- -d':')
-            curl --ipv4 --retry 3 "https://service.udpfile.com?asn=$meta_asn\&city=$meta_city" -o data.txt
+                    echo DNS解析，获取节点中...
+                    curl --ipv4 --retry 3 -v "https://speed.cloudflare.com/__down">meta 2>&1
+                    echo cat meta | tr -d '\r' > meta_tmp
+                    meta_asn=$(cat meta_tmp | grep cf-meta-asn: | cut -f 2- -d':')
+                    echo asn=$meta_asn > meta.txt
+                    meta_city=$(cat meta_tmp | grep cf-meta-city: | cut -f 2- -d':')
+                    echo city=$meta_city > meta.txt
+                   curl --ipv4 --retry 3 "https://service.udpfile.com?asn=$meta_asn\&city=$meta_city" -o data.txt
 		fi
 		domain=$(cat data.txt | grep domain= | cut -f 2- -d'=')
-        file=$(cat data.txt | grep file= | cut -f 2- -d'=')
-        url=$(cat data.txt | grep url= | cut -f 2- -d'=')
-        app=$(cat data.txt | grep app= | cut -f 2- -d'=')
+                file=$(cat data.txt | grep file= | cut -f 2- -d'=')
+                url=$(cat data.txt | grep url= | cut -f 2- -d'=')
+                app=$(cat data.txt | grep app= | cut -f 2- -d'=')
         if [[ "$app" != "20210306" ]]
         then
             echo 发现新版本程序: $app
@@ -300,7 +302,7 @@ do
 		break
 done
 	max=$[$max/1024]
-    realbandwidth=$max/128
+        realbandwidth=$[$max/128]
 	endtime=`date +'%Y-%m-%d %H:%M:%S'`
 	start_seconds=$(date --date="$starttime" +%s)
 	end_seconds=$(date --date="$endtime" +%s)
@@ -308,12 +310,12 @@ done
 	curl --ipv4 --resolve service.udpfile.com:443:$anycast --retry 3 -s -X POST -d ''20210303-$anycast-$max'' 'https://service.udpfile.com?asn=$meta_asn\&city=$meta_city' -o temp.txt
 	publicip=$(cat temp.txt | grep publicip= | cut -f 2- -d'=')
 	colo=$(cat temp.txt | grep colo= | cut -f 2- -d'=')
-    meta_asn=$(cat meta_tmp | grep cf-meta-asn: | cut -f 2- -d':')
-    meta_city=$(cat meta_tmp | grep cf-meta-city: | cut -f 2- -d':')
+        asn=$(cat meta.txt | grep asn= | cut -f 2- -d'=')
+        city=$(cat meta.txt | grep city= | cut -f 2- -d'=')
 	echo 优选IP $anycast 满足 $bandwidth Mbps带宽需求
     echo 公网IP $publicip
-    echo 自治域 AS$meta_asn
-    echo META城市 $meta_city
+    echo 自治域 AS$asn
+    echo META城市 $city
     echo 实际带宽 $realbandwidth Mbps
     echo 峰值速度 $max kB/s
     echo 数据中心 $colo
