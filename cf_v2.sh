@@ -19,7 +19,7 @@ do
 		then
                     echo DNS解析，获取节点中...
                     curl --ipv4 --retry 3 -v "https://speed.cloudflare.com/__down">meta 2>&1
-                    echo cat meta | tr -d '\r' > meta_tmp
+                    cat meta | tr -d '\r' > meta_tmp
                     meta_asn=$(cat meta_tmp | grep cf-meta-asn: | cut -f 2- -d':')
                     echo asn=$meta_asn > meta.txt
                     meta_city=$(cat meta_tmp | grep cf-meta-city: | cut -f 2- -d':')
