@@ -18,16 +18,17 @@ do
 		if [[ ! -f "$datafile" ]]
 		then
 			dnsfile="./resolve.txt"
-            if [[ ! -f "$dnsfile" ]]
-            then
-                echo DNS解析中
-                curl --ipv4 --retry 3 -v "https://speed.cloudflare.com/__down">meta 2>&1
-                echo cat meta | tr -d '\r' > meta_tmp
-                meta_asn=$(cat meta_tmp | grep cf-meta-asn: | cut -f 2- -d':')
-                meta_city=$(cat meta_tmp | grep cf-meta-city: | cut -f 2- -d':')
-                curl --ipv4 --retry 3 "https://service.udpfile.com?asn=$meta_asn\&city=$meta_city" -o data.txt
+            		if [[ ! -f "$dnsfile" ]]
+            		then
+               			echo DNS解析中
+                		curl --ipv4 --retry 3 -v "https://speed.cloudflare.com/__down">meta 2>&1
+                		echo cat meta | tr -d '\r' > meta_tmp
+                		meta_asn=$(cat meta_tmp | grep cf-meta-asn: | cut -f 2- -d':')
+                		meta_city=$(cat meta_tmp | grep cf-meta-city: | cut -f 2- -d':')
+                		curl --ipv4 --retry 3 "https://service.udpfile.com?asn=$meta_asn\&city=$meta_city" -o data.txt
+			fi
 		fi
-		domain=$(cat data.txt | grep domain= | cut -f 2- -d'=')
+	domain=$(cat data.txt | grep domain= | cut -f 2- -d'=')
         file=$(cat data.txt | grep file= | cut -f 2- -d'=')
         url=$(cat data.txt | grep url= | cut -f 2- -d'=')
         app=$(cat data.txt | grep app= | cut -f 2- -d'=')
