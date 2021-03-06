@@ -321,4 +321,4 @@ done
     echo 数据中心 $colo
     echo 总计用时 $((end_seconds-start_seconds)) 秒
     echo $anycast >resolve.txt
-	rm -rf temp.txt
+    rm -rf temp.txt meta.txt
