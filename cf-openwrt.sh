@@ -108,16 +108,16 @@ do
 		done
 		cat icmp/*.log | grep 'statistics\|loss' | sed -n '{N;s/\n/\t/p}' | cut -f 1 -d'%' | awk '{print $NF,$2}' | sort -n | awk '{print $2}' | sed '31,$d' > ip.txt
 		rm -rf icmp
-		echo 选取30个丢包率最少的IP地址下载测速，本次测速ASN:$asn,城市:$city
+		echo 选取30个丢包率最少的IP地址下载测速
 		mkdir temp
 		for i in `cat ip.txt`
 		do
-			echo $i 启动测速，ASN:$asn,城市:$city
+			echo $i 启动测速
 			curl --resolve $domain:443:$i https://$domain/$file -o temp/$i -s --connect-timeout 2 --max-time 10&
 		done
 		echo 等待测速进程结束,筛选出三个优选的IP
 		sleep 15
-		echo 测速完成，本次测速ASN:$asn,城市:$city
+		echo 测速完成
 		ls -S temp > ip.txt
 		rm -rf temp
 		n=$(wc -l ip.txt | awk '{print $1}')
