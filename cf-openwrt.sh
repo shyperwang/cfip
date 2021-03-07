@@ -1,8 +1,12 @@
 #!/bin/bash
 # random cloudflare anycast ip
+localport=8443
+remoteport=443
+
 declare -i bandwidth
 declare -i speed
-read -p "请设置期望到 CloudFlare 服务器的带宽大小(单位 Mbps):" bandwidth
+bandwidth=50
+#read -p "请设置期望到 CloudFlare 服务器的带宽大小(单位 Mbps):" bandwidth
 speed=bandwidth*128*1024
 starttime=`date +'%Y-%m-%d %H:%M:%S'`
 while true
@@ -386,3 +390,6 @@ done
 	echo 峰值速度 $max kB/s
 	echo 数据中心 $colo
 	echo 总计用时 $((end_seconds-start_seconds)) 秒
+	iptables -t nat -D OUTPUT $(iptables -t nat -nL OUTPUT --line-number | grep $localport | awk '{print $1}')
+	iptables -t nat -A OUTPUT -p tcp --dport $localport -j DNAT --to-destination $anycast:$remoteport
+        echo 路由重定向$anycast完成，监听端口:8443
