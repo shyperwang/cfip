@@ -85,10 +85,10 @@ do
 				p=$(ps -ef | grep ping | grep -v "grep" | wc -l)
 				if [ $p -ge 200 ]
 				then
-					echo 正在测试 ICMP 丢包率:进程数 $p,已完成 $per %
+					echo ASN:$asn,城市:$city,正在测试 ICMP 丢包率:进程数 $p,已完成 $per %
 					sleep 1
 				else
-					echo 正在测试 ICMP 丢包率:进程数 $p,已完成 $per %
+					echo ASN:$asn,城市:$city,正在测试 ICMP 丢包率:进程数 $p,已完成 $per %
 					break
 				fi
 			done
@@ -99,10 +99,10 @@ do
 			p=$(ps -ef | grep ping | grep -v "grep" | wc -l)
 			if [ $p -ne 0 ]
 			then
-				echo 等待 ICMP 进程结束:剩余进程数 $p
+				echo ASN:$asn,城市:$city,等待 ICMP 进程结束:剩余进程数 $p
 				sleep 1
 			else
-				echo ICMP 丢包率测试完成
+				echo ASN:$asn,城市:$city,ICMP 丢包率测试完成
 				break
 			fi
 		done
@@ -112,12 +112,12 @@ do
 		mkdir temp
 		for i in `cat ip.txt`
 		do
-			echo $i 启动测速
+			echo $i 启动测速，ASN:$asn,城市:$city
 			curl --resolve $domain:443:$i https://$domain/$file -o temp/$i -s --connect-timeout 2 --max-time 10&
 		done
 		echo 等待测速进程结束,筛选出三个优选的IP
 		sleep 15
-		echo 测速完成
+		echo 测速完成，本次测试ASN:$asn,城市:$city
 		ls -S temp > ip.txt
 		rm -rf temp
 		n=$(wc -l ip.txt | awk '{print $1}')
@@ -126,8 +126,8 @@ do
 			second=$(sed -n '2p' ip.txt)
 			third=$(sed -n '3p' ip.txt)
 			rm -rf ip.txt
-			echo 优选的IP地址为 $first - $second - $third
-			echo 第一次测试 $first
+			echo ASN:$asn,城市:$city,优选的IP地址为 $first - $second - $third
+			echo ASN:$asn,城市:$city,第一次测试 $first
 			curl --resolve $domain:443:$first https://$domain/$file -o /dev/null --connect-timeout 5 --max-time 10 > log.txt 2>&1
 			cat log.txt | tr '\r' '\n' | awk '{print $NF}' | sed '1,3d;$d' | grep -v 'k\|M' >> speed.txt
 			for i in `cat log.txt | tr '\r' '\n' | awk '{print $NF}' | sed '1,3d;$d' | grep k | sed 's/k//g'`
@@ -163,7 +163,7 @@ do
 			max=$[$max/1024]
 			max1=max
 			echo 峰值速度 $max kB/s
-			echo 第二次测试 $first
+			echo ASN:$asn,城市:$city,第二次测试 $first
 			curl --resolve $domain:443:$first https://$domain/$file -o /dev/null --connect-timeout 5 --max-time 10 > log.txt 2>&1
 			cat log.txt | tr '\r' '\n' | awk '{print $NF}' | sed '1,3d;$d' | grep -v 'k\|M' >> speed.txt
 			for i in `cat log.txt | tr '\r' '\n' | awk '{print $NF}' | sed '1,3d;$d' | grep k | sed 's/k//g'`
@@ -205,7 +205,7 @@ do
 			else
 				curl --ipv4 --resolve service.udpfile.com:443:$first --retry 3 -s -X POST -d ''20210307-$first-$max2'' "https://service.udpfile.com?asn="$asn"&city="$city"" -o /dev/null --connect-timeout 5 --max-time 10
 			fi
-			echo 第一次测试 $second
+			echo ASN:$asn,城市:$city,第一次测试 $second
 			curl --resolve $domain:443:$second https://$domain/$file -o /dev/null --connect-timeout 5 --max-time 10 > log.txt 2>&1
 			cat log.txt | tr '\r' '\n' | awk '{print $NF}' | sed '1,3d;$d' | grep -v 'k\|M' >> speed.txt
 			for i in `cat log.txt | tr '\r' '\n' | awk '{print $NF}' | sed '1,3d;$d' | grep k | sed 's/k//g'`
@@ -241,7 +241,7 @@ do
 			max=$[$max/1024]
 			max1=max
 			echo 峰值速度 $max kB/s
-			echo 第二次测试 $second
+			echo ASN:$asn,城市:$city,第二次测试 $second
 			curl --resolve $domain:443:$second https://$domain/$file -o /dev/null --connect-timeout 5 --max-time 10 > log.txt 2>&1
 			cat log.txt | tr '\r' '\n' | awk '{print $NF}' | sed '1,3d;$d' | grep -v 'k\|M' >> speed.txt
 			for i in `cat log.txt | tr '\r' '\n' | awk '{print $NF}' | sed '1,3d;$d' | grep k | sed 's/k//g'`
@@ -283,7 +283,7 @@ do
 			else
 				curl --ipv4 --resolve service.udpfile.com:443:$second --retry 3 -s -X POST -d ''20210307-$second-$max2'' "https://service.udpfile.com?asn="$asn"&city="$city"" -o /dev/null --connect-timeout 5 --max-time 10
 			fi
-			echo 第一次测试 $third
+			echo ASN:$asn,城市:$city,第一次测试 $third
 			curl --resolve $domain:443:$third https://$domain/$file -o /dev/null --connect-timeout 5 --max-time 10 > log.txt 2>&1
 			cat log.txt | tr '\r' '\n' | awk '{print $NF}' | sed '1,3d;$d' | grep -v 'k\|M' >> speed.txt
 			for i in `cat log.txt | tr '\r' '\n' | awk '{print $NF}' | sed '1,3d;$d' | grep k | sed 's/k//g'`
@@ -319,7 +319,7 @@ do
 			max=$[$max/1024]
 			max1=max
 			echo 峰值速度 $max kB/s
-			echo 第二次测试 $third
+			echo ASN:$asn,城市:$city,第二次测试 $third
 			curl --resolve $domain:443:$third https://$domain/$file -o /dev/null --connect-timeout 5 --max-time 10 > log.txt 2>&1
 			cat log.txt | tr '\r' '\n' | awk '{print $NF}' | sed '1,3d;$d' | grep -v 'k\|M' >> speed.txt
 			for i in `cat log.txt | tr '\r' '\n' | awk '{print $NF}' | sed '1,3d;$d' | grep k | sed 's/k//g'`
